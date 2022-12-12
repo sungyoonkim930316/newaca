@@ -1,0 +1,100 @@
+/*
+		 * [스네이크게임]
+		 * 1. 10x10 배열을 0으로 채운다.
+		 * 2. 스네이크는 1234로 표시한다.
+		 * 3. 머리 상하좌우로 이동이 가능하며, 꼬리가 따라온다.
+		 * 4. 자기몸하고 부딪히면, 사망한다.
+		 * 5. 랜덤으로 아이템을 생성해
+		 *    아이템을 먹으면 꼬리 1개가 자란다.
+		 * 6. 꼬리는 최대 8개까지 증가할 수 있다.
+		 */
+		
+		Random r=new Random();
+		Scanner s=new Scanner(System.in);
+		
+		int size=10;
+		int[][] board=new int[size][size];
+		int[] snake= null;
+		int hx=4;
+		int hy=4;
+		int tail=0;
+		int tName=2;
+		int snakeIdx=0;
+		int berryLimitation=0;
+		
+		int turn=0;
+		while(true) {
+			tail=snake==null?0:snake.length;
+			
+			// 꼬리에 닿으면 패배처리
+			if(board[hy][hx]!=0&&board[hy][hx]!=7) {System.err.println("페베");break;}
+			
+			// 열매를 먹은경우 꼬리길이 추가
+			if(board[hy][hx]==7&&tName<=8) {
+				if(snake==null) {snake=new int[1];}
+				else {
+					int[] temp=new int[tail+1];
+					for(int i=0;i<tail;i++) {temp[i]=snake[i];}
+					snake=temp;
+					temp=null;
+				}
+				snake[tail]=tName;
+				tName++;
+				berryLimitation--;
+			}
+			
+			// 뱀머리 위치
+			board[hy][hx]=1;
+			for(int i=0;i<size;i++) {
+				for(int j=0;j<size;j++) {
+					if(board[i][j]==1) {
+						hy=i;hx=j;
+						break;
+					}
+				}
+			}
+			
+			// 랜덤한 위치에 열매 생성
+			if(berryLimitation<3) {
+				while(true) {
+					int berryx=r.nextInt(9);
+					int berryy=r.nextInt(9);
+					if(board[berryy][berryx]==0) {board[berryy][berryx]=7;berryLimitation++;break;}
+				}
+			}
+			
+			// 게임판
+			for(int i=0;i<size;i++) {
+				System.out.println(Arrays.toString(board[i]));
+			}
+			
+			// 명령어로 벰을 움직이다. 
+			System.out.print("[이동한다 : ADWS]");
+			String move=s.nextLine();
+			board[hy][hx]=0;
+			if(snake!=null) {
+				int temp=hx;
+				for(int i=0;i<snake.length;i++) {
+					board[hy][temp]=snake[i];
+					temp--;
+				}
+			}
+//			else {board[hy][hx]=0;}
+			if(move.equalsIgnoreCase("d")) {
+				hx++;
+				if(hx>size-1) {System.err.println("페베");break;}
+			}
+			if(move.equalsIgnoreCase("a")) {
+				hx--;
+				if(hx<0) {System.err.println("페베");break;}
+			}
+			if(move.equalsIgnoreCase("w")) {
+				hy--;
+				if(hy<0) {System.err.println("페베");break;}
+			}
+			if(move.equalsIgnoreCase("s")) {
+				hy++;
+				if(hy>size-1) {System.err.println("페베");break;}
+			}
+
+		}
